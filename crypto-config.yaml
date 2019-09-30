@@ -2,43 +2,23 @@ version: '2'
 
 OrdererOrgs:
   - Name: Orderer 
-    Domain: lictransfer.com
+    Domain: tokentransfer.com
     Specs:
       - Hostname: orderer
 
 PeerOrgs:
-  - Name: Applee 
-    Domain: Applee.com 
+  - Name: icici 
+    Domain: icici.com 
     EnableNodeOUs: true
     Template: 
       Count: 2
     Users:
       Count: 1
-  - Name: googlee 
-    Domain: googlee.com 
+  - Name: sbi 
+    Domain: sbi.com 
     EnableNodeOUs: true
     Template: 
       Count: 2
     Users:
       Count: 1
-  - Name: ibmm 
-    Domain: ibmm.com 
-    EnableNodeOUs: true
-    Template: 
-      Count: 2
-    Users:
-      Count: 1
-  - Name: oraclee 
-    Domain: oraclee.com 
-    EnableNodeOUs: true
-    Template: 
-      Count: 2
-    Users:
-      Count: 1
-  - Name: microsoftt 
-    Domain: microsoftt.com 
-    EnableNodeOUs: true
-    Template: 
-      Count: 2
-    Users:
-      Count: 1
+ 

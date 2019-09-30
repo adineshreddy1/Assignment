@@ -1,0 +1,147 @@
+Organizations:
+    - &OrdererOrg
+        Name: OrdererOrg
+        ID: OrdererMSP
+        MSPDir: crypto-config/ordererOrganizations/tokentransfer.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('OrdererMSP.admin', 'OrdererMSP.peer', 'OrdererMSP.client', 'OrdererMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('OrdererMSP.admin', 'OrdererMSP.peer', 'OrdererMSP.client', 'OrdererMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('OrdererMSP.admin')"
+
+    - &Org1
+        Name: iciciMSP
+        ID: iciciMSP
+        MSPDir: crypto-config/peerOrganizations/icici.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('iciciMSP.admin', 'iciciMSP.peer', 'iciciMSP.client', 'iciciMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('iciciMSP.admin', 'iciciMSP.peer', 'iciciMSP.client', 'iciciMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('iciciMSP.admin')"
+
+        AnchorPeers:
+            - Host: peer0.icici.com
+              Port: 7051
+
+    - &Org2
+        Name: sbiMSP
+        ID: sbiMSP
+        MSPDir: crypto-config/peerOrganizations/sbi.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('sbiMSP.admin', 'sbiMSP.peer', 'sbiMSP.client', 'sbiMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('sbiMSP.admin', 'sbiMSP.peer', 'sbiMSP.client', 'sbiMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('sbiMSP.admin')"
+
+        AnchorPeers:
+            - Host: peer0.sbi.com
+              Port: 7351
+Capabilities:
+    Channel: &ChannelCapabilities
+        V1_3: true
+    Orderer: &OrdererCapabilities
+        V1_1: true
+    Application: &ApplicationCapabilities
+        V1_3: true
+        V1_2: false
+        V1_1: false
+
+Application: &ApplicationDefaults
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+
+    Capabilities:
+        <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+    OrdererType: solo
+
+    Addresses:
+        - orderer.tokentransfer.com:7050
+    BatchTimeout: 2s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        BlockValidation:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+#   CHANNEL
+Channel: &ChannelDefaults
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+
+    Capabilities:
+        <<: *ChannelCapabilities
+#   Profile
+Profiles:
+
+    TwoOrgsOrdererGenesis:
+        <<: *ChannelDefaults
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
+        Consortiums:
+            LicenseConsortium:
+                Organizations:
+                    - *Org1
+                    - *Org2
+    TwoOrgsChannel:
+        Consortium: LicenseConsortium
+        <<: *ChannelDefaults
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *Org1
+                - *Org2
+            Capabilities:
+                <<: *ApplicationCapabilities
+
+  
