@@ -50,7 +50,7 @@ Organizations:
 
         AnchorPeers:
             - Host: peer0.sbi.com
-              Port: 7351
+              Port: 7451
 Capabilities:
     Channel: &ChannelCapabilities
         V1_3: true

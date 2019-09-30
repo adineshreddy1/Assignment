@@ -1,7 +1,7 @@
 version: '2'
 
 networks:
-  lic:
+  token:
 
 volumes:
   sbi.ca.com:
@@ -21,14 +21,14 @@ services:
       - FABRIC_CA_TLS_ENABLED=true
       - FABRIC_CA_SERVER_CA_NAME=sbi-ca-server
       - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.sbi.com-cert.pem
-      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/240a7422e6d9bf649c7ecf8657163bfab70ab3bc41a029f26158f2d6e568fa37_sk
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/2fcee127d2095ff084050fcc767c96d4db8e1c84d1a47520f794e5dcb33e5418_sk
     ports:
       - "7454:7054"
-    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.sbi.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/240a7422e6d9bf649c7ecf8657163bfab70ab3bc41a029f26158f2d6e568fa37_sk -b admin:adminpw -d'
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.sbi.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/2fcee127d2095ff084050fcc767c96d4db8e1c84d1a47520f794e5dcb33e5418_sk -b admin:adminpw -d'
     volumes:
       - ./crypto-config/peerOrganizations/sbi.com/ca/:/etc/hyperledger/fabric-ca-server-config
     networks:
-      - lic
+      - token
   
   sbi.couchdb.0.com:
     container_name: sbi.couchdb.0.com
@@ -38,7 +38,7 @@ services:
     ports:
       - "5484:5984"
     networks:
-      - lic
+      - token
   
   sbi.couchdb.1.com:
     container_name: sbi.couchdb.1.com
@@ -48,7 +48,7 @@ services:
     ports:
       - "6484:5984"
     networks:
-      - lic
+      - token
 
   peer0.sbi.com:
     container_name: peer0.sbi.com
@@ -79,7 +79,7 @@ services:
     depends_on: 
       - sbi.couchdb.0.com
     networks:
-      - lic
+      - token
 
   peer1.sbi.com:
     container_name: peer1.sbi.com
@@ -108,11 +108,6 @@ services:
       - 8451:8451
       - 8452:8452
     networks:
-      - lic
+      - token
     depends_on: 
       - sbi.couchdb.1.com
-
-
-    
-
-

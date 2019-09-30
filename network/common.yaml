@@ -1,0 +1,98 @@
+  
+
+version: '2'
+
+volumes:
+  orderer.tokentransfer.com:
+  peer0.icici.com:
+  peer1.icici.com:
+  peer0.sbi.com:
+  peer1.sbi.com:
+  cli:
+
+networks:
+  token:
+
+services:
+  orderer.tokentransfer.com:
+    container_name: orderer.tokentransfer.com
+    extends:
+      file: org-abstract.yaml
+      service: orderer-abstract
+    volumes:
+        - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+        - ./crypto-config/ordererOrganizations/tokentransfer.com/orderers/orderer.tokentransfer.com/msp:/var/hyperledger/orderer/msp
+        - ./crypto-config/ordererOrganizations/tokentransfer.com/orderers/orderer.tokentransfer.com/tls:/var/hyperledger/orderer/tls
+        - orderer.tokentransfer.com:/var/hyperledger/production/orderer
+    ports:
+      - 7050:7050
+    networks:
+      - token
+
+  peer0.icici.com:
+    container_name: peer0.icici.com
+    extends:
+      file: org-abstract.yaml
+      service: peer-abstract
+    networks:
+      - token
+
+  peer1.icici.com:
+    container_name: peer1.icici.com
+    extends:
+      file: org-abstract.yaml
+      service: peer-abstract
+    networks:
+      - token
+
+  peer0.sbi.com:
+    container_name: peer0.sbi.com
+    extends:
+      file: org-abstract.yaml
+      service: peer-abstract
+    networks:
+      - token
+
+  peer1.sbi.com:
+    container_name: peer1.sbi.com
+    extends:
+      file: org-abstract.yaml
+      service: peer-abstract
+    networks:
+      - token
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:$IMAGE_TAG
+    tty: true
+    stdin_open: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.icici.com:7051
+      - CORE_PEER_LOCALMSPID=iciciMSP
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/icici.com/peers/peer0.icici.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/icici.com/peers/peer0.icici.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/icici.com/peers/peer0.icici.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/icici.com/users/Admin@icici.com/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./chaincode/:/opt/gopath/src/github.com/chaincode
+        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+        - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
+        - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+
+    depends_on:
+      - orderer.tokentransfer.com
+      - peer0.icici.com
+      - peer1.icici.com
+      - peer0.sbi.com
+      - peer1.sbi.com
+      
+    networks:
+      - token

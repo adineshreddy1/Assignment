@@ -1,0 +1,118 @@
+version: '2'
+
+networks:
+  token:
+
+volumes:
+  icici.ca.com:
+  icici.couchdb.0.com:
+  icici.couchdb.1.com:
+  peer0.icici.com:
+  peer1.icici.com:
+
+services:
+  icici.ca.com:
+    container_name: icici.ca.com 
+    extends:
+      file: org-abstract.yaml
+      service: ca-abstract
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_CA_NAME=Apple-ca-server
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.icici.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/CA_ICICI_KEY
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.icici.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/CA_ICICI_KEY -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/icici.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    networks:
+      - token
+  
+  icici.couchdb.0.com:
+    container_name: icici.couchdb.0.com
+    extends:
+      file: org-abstract.yaml
+      service: couch-abstract
+    ports:
+      - "5984:5984"
+    networks:
+      - token
+  
+  icici.couchdb.1.com:
+    container_name: icici.couchdb.1.com
+    extends:
+      file: org-abstract.yaml
+      service: couch-abstract
+    ports:
+      - "6984:5984"
+    networks:
+      - token
+
+  peer0.icici.com:
+    container_name: peer0.icici.com
+    extends:
+      file: org-abstract.yaml
+      service: peer-abstract
+    environment:
+      - CORE_PEER_ID=peer0.icici.com
+      - CORE_PEER_ADDRESS=peer0.icici.com:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.icici.com:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+#      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.icici.com:8051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.icici.com:7051
+      - CORE_PEER_LOCALMSPID=iciciMSP
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=icici.couchdb.0.com:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/icici.com/peers/peer0.icici.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/icici.com/peers/peer0.icici.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.icici.com:/var/hyperledger/production
+    ports:
+      - 7051:7051
+      - 7052:7052
+    depends_on: 
+      - icici.couchdb.0.com
+    networks:
+      - token
+
+  peer1.icici.com:
+    container_name: peer1.icici.com
+    extends:
+      file: org-abstract.yaml
+      service: peer-abstract
+    environment:
+      - CORE_PEER_ID=peer1.icici.com
+      - CORE_PEER_ADDRESS=peer1.icici.com:8051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:8051
+      - CORE_PEER_CHAINCODEADDRESS=peer1.icici.com:8052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:8052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.icici.com:8051
+#      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.icici.com:7051
+      - CORE_PEER_LOCALMSPID=iciciMSP
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=icici.couchdb.1.com:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/icici.com/peers/peer1.icici.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/icici.com/peers/peer1.icici.com/tls:/etc/hyperledger/fabric/tls
+        - peer1.icici.com:/var/hyperledger/production
+    ports:
+      - 8051:8051
+      - 8052:8052
+    networks:
+      - token
+    depends_on: 
+      - icici.couchdb.1.com
+
+
+    
+
+
