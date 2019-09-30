@@ -1,0 +1,118 @@
+version: '2'
+
+networks:
+  lic:
+
+volumes:
+  sbi.ca.com:
+  sbi.couchdb.0.com:
+  sbi.couchdb.1.com:
+  peer0.sbi.com:
+  peer1.sbi.com:
+
+services:
+  sbi.ca.com:
+    container_name: sbi.ca.com 
+    extends:
+      file: org-abstract.yaml
+      service: ca-abstract
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_CA_NAME=sbi-ca-server
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.sbi.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/240a7422e6d9bf649c7ecf8657163bfab70ab3bc41a029f26158f2d6e568fa37_sk
+    ports:
+      - "7454:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.sbi.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/240a7422e6d9bf649c7ecf8657163bfab70ab3bc41a029f26158f2d6e568fa37_sk -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/sbi.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    networks:
+      - lic
+  
+  sbi.couchdb.0.com:
+    container_name: sbi.couchdb.0.com
+    extends:
+      file: org-abstract.yaml
+      service: couch-abstract
+    ports:
+      - "5484:5984"
+    networks:
+      - lic
+  
+  sbi.couchdb.1.com:
+    container_name: sbi.couchdb.1.com
+    extends:
+      file: org-abstract.yaml
+      service: couch-abstract
+    ports:
+      - "6484:5984"
+    networks:
+      - lic
+
+  peer0.sbi.com:
+    container_name: peer0.sbi.com
+    extends:
+      file: org-abstract.yaml
+      service: peer-abstract
+    environment:
+      - CORE_PEER_ID=peer0.sbi.com
+      - CORE_PEER_ADDRESS=peer0.sbi.com:7451
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7451
+      - CORE_PEER_CHAINCODEADDRESS=peer0.sbi.com:7452
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7452
+      #- CORE_PEER_GOSSIP_BOOTSTRAP=peer1.sbi.com:8451
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.sbi.com:7451
+      - CORE_PEER_LOCALMSPID=sbiMSP
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=sbi.couchdb.0.com:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/sbi.com/peers/peer0.sbi.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/sbi.com/peers/peer0.sbi.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.sbi.com:/var/hyperledger/production
+    ports:
+      - 7451:7451
+      - 7452:7452
+    depends_on: 
+      - sbi.couchdb.0.com
+    networks:
+      - lic
+
+  peer1.sbi.com:
+    container_name: peer1.sbi.com
+    extends:
+      file: org-abstract.yaml
+      service: peer-abstract
+    environment:
+      - CORE_PEER_ID=peer1.sbi.com
+      - CORE_PEER_ADDRESS=peer1.sbi.com:8451
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:8451
+      - CORE_PEER_CHAINCODEADDRESS=peer1.sbi.com:8452
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:8452
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.sbi.com:8451
+      #- CORE_PEER_GOSSIP_BOOTSTRAP=peer0.sbi.com:7451
+      - CORE_PEER_LOCALMSPID=sbiMSP
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=sbi.couchdb.1.com:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/sbi.com/peers/peer1.sbi.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/sbi.com/peers/peer1.sbi.com/tls:/etc/hyperledger/fabric/tls
+        - peer1.sbi.com:/var/hyperledger/production
+    ports:
+      - 8451:8451
+      - 8452:8452
+    networks:
+      - lic
+    depends_on: 
+      - sbi.couchdb.1.com
+
+
+    
+
+
