@@ -91,10 +91,10 @@ func (t *Tokentrans) GenerateToken(stub shim.ChaincodeStubInterface, args []stri
 	}
 	tokenobj.Token = GenToken(tokenobj.Name, tokenobj.ID, tokenobj.Company)
 
-	JSONBytes1, err1 := json.Marshal(tokenobj)
-	if err1 != nil {
-		fmt.Println("Unable to Marshal Generatetoken: ", err1)
-		return shim.Error(err1.Error())
+	JSONBytes1, err4 := json.Marshal(tokenobj)
+	if err4 != nil {
+		fmt.Println("Unable to Marshal Generatetoken: ", err4)
+		return shim.Error(err4.Error())
 	}
 
 	err = stub.PutState(tokenobj.Token, JSONBytes1)
