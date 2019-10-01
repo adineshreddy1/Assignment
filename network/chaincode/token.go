@@ -47,11 +47,9 @@ func (t *Tokentrans) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	case "GenerateToken":
 		//create a new token
 		return t.GenerateToken(stub, args)
-	case "TransferToken":
-		//change owner of a specific token
-		return t.TransferToken(stub, args)
+	//case "TransferToken":
+	//	return t.TransferToken(stub, args)
 	case "GetAllToken":
-		//find marbles based on an ad hoc rich query
 		return t.GetAllToken(stub, args)
 
 	}
@@ -64,7 +62,7 @@ func (t *Tokentrans) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 func GenToken(Name string, ID string, Company string) string {
 
 	//Generate Token for
-	tokenString := fmt.Sprintf("%s%s%d%s", Name, ID, Company, time.Now().String())
+	tokenString := fmt.Sprintf("%s%s%s%s", Name, ID, Company, time.Now().String())
 	input := strings.NewReader(tokenString)
 	hash := sha256.New()
 	if _, err := io.Copy(hash, input); err != nil {
@@ -109,19 +107,25 @@ func (t *Tokentrans) GenerateToken(stub shim.ChaincodeStubInterface, args []stri
 	return shim.Success(nil)
 }
 
+/*
+
 //TransferToken token need to give name to transfer and token generated
 func (t *Tokentrans) TransferToken(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+
 	if len(args) < 2 {
 		return shim.Error("Incorrect number of arguments. Expecting 2")
 	}
+	var err error
+	var tokenobj Tokentrans
 
+	carAsBytes, _ := APIstub.GetState(args[0])
 }
-
+*/
 //GetAllToken func
 func (t *Tokentrans) GetAllToken(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	var err error
 
-	queryString := fmt.Sprintf("{\"selector\":{\"RootLcToken\":{\"$ne\": \"%s\"}}}", "null")
+	queryString := fmt.Sprintf("{\"selector\":{\"Token\":{\"$ne\": \"%s\"}}}", "null")
 	queryResults, err := getQueryResultForQueryString(stub, queryString)
 	//fetch data from couch db ends here
 	if err != nil {
