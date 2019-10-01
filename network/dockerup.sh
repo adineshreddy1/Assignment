@@ -1,3 +1,5 @@
+export IMAGE_TAG=latest
+
 echo "Bringing up the docker containers"
 docker-compose -f icici.yaml -f sbi.yaml -f common.yaml up -d
 echo "channel setup "

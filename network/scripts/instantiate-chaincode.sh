@@ -17,5 +17,5 @@ peer chaincode instantiate -o orderer.tokentransfer.com:7050  \
                            -n $CC_NAME                      \
                            -c '{"Args": ["Init"]}'          \
                            -v $VER                          \
-			               -l golang                        \
+			   -l golang                        \
                            -P "OR ('iciciMSP.member', 'sbiMSP.member')" 

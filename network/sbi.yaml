@@ -21,10 +21,10 @@ services:
       - FABRIC_CA_TLS_ENABLED=true
       - FABRIC_CA_SERVER_CA_NAME=sbi-ca-server
       - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.sbi.com-cert.pem
-      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/61160e0ded1fd215d52e4dc5f57884723b3169072662ed440a3d0d8573af5199_sk
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/7e959c15c6dfde7f4a4d56ecacebd3935f536db2a3a7d92b65e1dcba69b14724_sk
     ports:
       - "7454:7054"
-    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.sbi.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/61160e0ded1fd215d52e4dc5f57884723b3169072662ed440a3d0d8573af5199_sk -b admin:adminpw -d'
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.sbi.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/7e959c15c6dfde7f4a4d56ecacebd3935f536db2a3a7d92b65e1dcba69b14724_sk -b admin:adminpw -d'
     volumes:
       - ./crypto-config/peerOrganizations/sbi.com/ca/:/etc/hyperledger/fabric-ca-server-config
     networks:

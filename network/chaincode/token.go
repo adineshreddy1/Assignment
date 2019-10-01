@@ -16,10 +16,9 @@ import (
 
 // Tokentrans type
 type Tokentrans struct {
-	Name    string `json:"Name"`
-	ID      string `json:"ID"`
-	Company string `json:"Company"`
-	Token   string `json:"Token"`
+	Token string `json:"Token"`
+	Name  string `json:"Name"`
+	ID    string `json:"ID"`
 }
 
 func main() {
@@ -59,10 +58,10 @@ func (t *Tokentrans) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 }
 
 //GenToken for
-func GenToken(Name string, ID string, Company string) string {
+func GenToken(Name string, ID string) string {
 
 	//Generate Token for
-	tokenString := fmt.Sprintf("%s%s%s%s", Name, ID, Company, time.Now().String())
+	tokenString := fmt.Sprintf("%s%s%s", Name, ID, time.Now().String())
 	input := strings.NewReader(tokenString)
 	hash := sha256.New()
 	if _, err := io.Copy(hash, input); err != nil {
@@ -85,11 +84,13 @@ func (t *Tokentrans) GenerateToken(stub shim.ChaincodeStubInterface, args []stri
 	}
 
 	err = json.Unmarshal([]byte(args[0]), &tokenobj)
+	//err = json.Unmarshal(&tokenobj)
+
 	if err != nil {
 		fmt.Println("Unable to unmarshal data in Generatetoken : ", err)
 		return shim.Error(err.Error())
 	}
-	tokenobj.Token = GenToken(tokenobj.Name, tokenobj.ID, tokenobj.Company)
+	tokenobj.Token = GenToken(tokenobj.Name, tokenobj.ID)
 
 	JSONBytes1, err4 := json.Marshal(tokenobj)
 	if err4 != nil {
@@ -108,7 +109,6 @@ func (t *Tokentrans) GenerateToken(stub shim.ChaincodeStubInterface, args []stri
 }
 
 /*
-
 //TransferToken token need to give name to transfer and token generated
 func (t *Tokentrans) TransferToken(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 

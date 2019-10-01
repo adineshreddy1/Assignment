@@ -21,10 +21,10 @@ services:
       - FABRIC_CA_TLS_ENABLED=true
       - FABRIC_CA_SERVER_CA_NAME=Apple-ca-server
       - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.icici.com-cert.pem
-      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/802546ab38d26ef874cfd630c154908c747e24939f194055db9c552ee2320f10_sk
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/f459589c4bf3c8d4ecc8f137653ce6458453e0edee01e2ec4bcf4a6591b2154f_sk
     ports:
       - "7054:7054"
-    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.icici.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/802546ab38d26ef874cfd630c154908c747e24939f194055db9c552ee2320f10_sk -b admin:adminpw -d'
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.icici.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/f459589c4bf3c8d4ecc8f137653ce6458453e0edee01e2ec4bcf4a6591b2154f_sk -b admin:adminpw -d'
     volumes:
       - ./crypto-config/peerOrganizations/icici.com/ca/:/etc/hyperledger/fabric-ca-server-config
     networks:
