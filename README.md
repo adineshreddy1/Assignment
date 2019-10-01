@@ -10,7 +10,6 @@ Generation of token random based on name,id and time functionalit and transferri
 
 # Steps for executing 
 
- ``` sh
 1)Run ./start.sh--> starts all the containers and app runs on 8000 port
 2)For invoke,query check the  invokeandquery.sh
   
