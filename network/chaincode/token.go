@@ -46,10 +46,12 @@ func (t *Tokentrans) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	case "GenerateToken":
 		//create a new token
 		return t.GenerateToken(stub, args)
-	//case "TransferToken":
-	//	return t.TransferToken(stub, args)
+	case "TransferToken":
+		return t.TransferToken(stub, args)
 	case "GetAllToken":
 		return t.GetAllToken(stub, args)
+	case "QueryName":
+		return t.QueryName(stub, args)
 
 	}
 
@@ -108,19 +110,25 @@ func (t *Tokentrans) GenerateToken(stub shim.ChaincodeStubInterface, args []stri
 	return shim.Success(nil)
 }
 
-/*
-//TransferToken token need to give name to transfer and token generated
+//TransferToken token need to give name to transfer and token generated 1- token and sender name
 func (t *Tokentrans) TransferToken(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 
 	if len(args) < 2 {
 		return shim.Error("Incorrect number of arguments. Expecting 2")
 	}
-	var err error
-	var tokenobj Tokentrans
+	//var tokenobj Tokentrans
 
-	carAsBytes, _ := APIstub.GetState(args[0])
+	tokenBytes, _ := stub.GetState(args[0])
+	tokenobj := Tokentrans{}
+	json.Unmarshal(tokenBytes, &tokenobj)
+	tokenobj.Name = args[1]
+
+	tokenBytes, _ = json.Marshal(tokenobj)
+	stub.PutState(args[0], tokenBytes)
+
+	return shim.Success(nil)
 }
-*/
+
 //GetAllToken func
 func (t *Tokentrans) GetAllToken(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	var err error
@@ -182,3 +190,25 @@ func getQueryResultForQueryString(stub shim.ChaincodeStubInterface, queryString 
 
 	return buffer.Bytes(), nil
 } // getQueryResultForQueryString
+
+//QueryName comment
+func (t *Tokentrans) QueryName(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	var err error
+
+	if len(args) < 1 {
+		fmt.Println("Invalid number of arguments")
+		return shim.Error(err.Error())
+	}
+	//fetch data from couch db starts here
+	var Name = args[0]
+	queryString := fmt.Sprintf("{\"selector\":{\"Name\":{\"$eq\": \"%s\"}}}", Name)
+	queryResults, err := getQueryResultForQueryString(stub, queryString)
+	//fetch data from couch db ends here
+	if err != nil {
+		fmt.Printf("Unable to get Node details: %s\n", err)
+		return shim.Error(err.Error())
+	}
+	fmt.Printf("Details for name    : %v\n", queryResults)
+
+	return shim.Success(queryResults)
+}
