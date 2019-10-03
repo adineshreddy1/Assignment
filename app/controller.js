@@ -14,7 +14,7 @@ module.exports = (function() {
 return{
 	
 	GetAllToken: function(req, res){
-		console.log("Get All the available licenses to be shared: ");
+		console.log("Get All token details : ");
 
 		var fabric_client = new Fabric_Client();
 
@@ -413,7 +413,7 @@ return{
 
 	},
 	QueryName: function(req, res){
-		console.log("Get the details  to be shared: ");
+		console.log("Get the details for searching: ");
 		var Name  = req.body.Name
 
 		var fabric_client = new Fabric_Client();
