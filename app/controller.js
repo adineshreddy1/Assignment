@@ -8,7 +8,6 @@ var Fabric_Client = require('fabric-client');
 var path          = require('path');
 var util          = require('util');
 var os            = require('os');
-var multer        = require('multer');
 var crypto        = require('crypto');
 
 module.exports = (function() {
