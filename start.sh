@@ -6,8 +6,11 @@ cd network
 cd -
 cd app
 
-npm install
+echo "******Installing fabric-client********"
+npm install fabric-client
 
+
+npm install
 rm -rf key-store-icici key-store-sbi
 
 echo "********************************************Enroll admin for icici********************************************"
