@@ -1,4 +1,4 @@
-# Assignment
+# Token-Transfer
 
 Peer-to-peer transfer of a fictional / virtual token on a simple private blockchain.
 Developed on Hyperledger fabric
